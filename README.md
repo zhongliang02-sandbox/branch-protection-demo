@@ -7,3 +7,4 @@ This repo demonstrates branch protection on `main`.
 - Direct pushes to `main` are **blocked**
 - All changes must go through a pull request
 - At least 1 approval required before merging
+# owner bypass test - enforce_admins OFF
