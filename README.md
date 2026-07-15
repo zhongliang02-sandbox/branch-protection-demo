@@ -8,3 +8,4 @@ This repo demonstrates branch protection on `main`.
 - All changes must go through a pull request
 - At least 1 approval required before merging
 # owner bypass test - enforce_admins OFF
+# github app user token bypass test
