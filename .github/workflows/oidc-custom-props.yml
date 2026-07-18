@@ -1,0 +1,32 @@
+name: OIDC Custom Properties Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decode OIDC token and check for custom properties
+        run: |
+          TOKEN=$(curl -sf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" | jq -r '.value')
+          
+          echo "=== FULL TOKEN PAYLOAD ==="
+          echo "$TOKEN" | cut -d. -f2 | python3 -c "
+          import sys,base64,json
+          d=sys.stdin.read().strip(); d+='='*((4-len(d)%4)%4)
+          p=json.loads(base64.urlsafe_b64decode(d))
+          print(json.dumps(p,indent=2))
+          print()
+          print('Total claims:', len(p))
+          print('scp present:', 'scp' in p)
+          print('scp value:', p.get('scp','<absent>'))
+          print('oidc_test present:', 'oidc_test' in p)
+          print('custom_properties present:', any(k.startswith('custom_') for k in p))
+          print('All keys:', sorted(p.keys()))
+          "
